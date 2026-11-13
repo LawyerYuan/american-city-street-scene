@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>美式城市街景</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #c9d9e6; }
+  body { font-family: -apple-system, "PingFang SC", "Helvetica Neue", Helvetica, Arial, sans-serif; color: #fff; -webkit-font-smoothing: antialiased; }
+  #stage { position: fixed; inset: 0; }
+  #stage canvas { display: block; width: 100%; height: 100%; outline: none; touch-action: none; cursor: grab; }
+  #stage canvas:active { cursor: grabbing; }
+  .ui { position: fixed; z-index: 5; user-select: none; -webkit-user-select: none; transition: opacity .35s; }
+  body.noui .ui { opacity: 0; pointer-events: none; }
+  #hud { left: 22px; top: 18px; text-shadow: 0 1px 6px rgba(0,0,0,.45); pointer-events: none; }
+  #hud h1 { margin: 0; font-size: 19px; font-weight: 600; letter-spacing: .06em; }
+  #hud h1 span { margin-left: 10px; font-size: 12px; font-weight: 400; opacity: .82; letter-spacing: .12em; }
+  #hud p { margin: 6px 0 0; font-size: 12px; opacity: .8; letter-spacing: .04em; }
+  #bar { left: 50%; bottom: 20px; transform: translateX(-50%); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; max-width: calc(100vw - 24px); }
+  .pill { display: flex; background: rgba(18,24,34,.56); backdrop-filter: blur(14px) saturate(1.3); -webkit-backdrop-filter: blur(14px) saturate(1.3); border: 1px solid rgba(255,255,255,.16); border-radius: 999px; padding: 3px; box-shadow: 0 6px 22px rgba(0,0,0,.22); }
+  .pill button { appearance: none; border: 0; background: transparent; color: rgba(255,255,255,.86); font: inherit; font-size: 13px; padding: 7px 13px; border-radius: 999px; cursor: pointer; white-space: nowrap; letter-spacing: .03em; }
+  .pill button:hover { background: rgba(255,255,255,.13); color: #fff; }
+  .pill button.on { background: rgba(255,255,255,.92); color: #16202c; font-weight: 600; }
+  .pill button:focus-visible { outline: 2px solid #9fd0ff; outline-offset: 1px; }
+  #follow { left: 50%; top: 18px; transform: translateX(-50%); background: rgba(18,24,34,.62); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,.18); border-radius: 999px; padding: 7px 8px 7px 16px; font-size: 13px; display: flex; gap: 10px; align-items: center; }
+  #follow[hidden] { display: none; }
+  #follow button { appearance: none; border: 0; border-radius: 999px; background: rgba(255,255,255,.9); color: #16202c; font: inherit; font-size: 12px; padding: 4px 11px; cursor: pointer; }
+  #stats { right: 18px; top: 16px; font-size: 11px; opacity: .7; text-align: right; text-shadow: 0 1px 4px rgba(0,0,0,.5); pointer-events: none; font-variant-numeric: tabular-nums; }
+  #loading { position: fixed; inset: 0; z-index: 9; display: flex; align-items: center; justify-content: center; background: #c9d9e6; color: #33485c; font-size: 15px; letter-spacing: .2em; transition: opacity .6s; }
+  #loading.done { opacity: 0; pointer-events: none; }
+  #err { position: fixed; left: 12px; bottom: 12px; z-index: 20; max-width: 80vw; font: 12px/1.4 Menlo, monospace; color: #fff; background: rgba(160,20,20,.85); padding: 8px 10px; border-radius: 6px; white-space: pre-wrap; display: none; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div id="hud" class="ui">
+  <h1>美式街景<span>1∶1 沙盘</span></h1>
+  <p>拖拽旋转 · 滚轮缩放 · 右键平移 · 点车辆跟随 · 按 H 隐藏界面</p>
+</div>
+<div id="follow" class="ui" hidden><span>跟随中：<b id="followName"></b></span><button id="followExit">退出</button></div>
+<div id="stats" class="ui"></div>
+<div id="bar" class="ui">
+  <div class="pill" id="tod">
+    <button data-t="0" class="on">白天</button><button data-t="1">黄昏</button><button data-t="2">夜晚</button>
+  </div>
+  <div class="pill" id="views">
+    <button data-v="all">全景</button><button data-v="ix">立交</button><button data-v="canyon">高架峡谷</button><button data-v="main">公交大道</button><button data-v="river">河岸</button>
+  </div>
+  <div class="pill">
+    <button id="btnBus">跟随公交</button><button id="btnRotate">自动旋转</button><button id="btnFull">全屏</button>
+  </div>
+</div>
+<div id="loading">正在搭建城市…</div>
+<div id="err"></div>
+<script>
+window.addEventListener('error', function (e) {
+  var el = document.getElementById('err');
+  el.style.display = 'block';
+  el.textContent = '出错了：' + (e.message || e.error) + (e.filename ? '\n' + e.filename.slice(-40) + ':' + e.lineno : '');
+});
+</script>
+<script>/*__BUNDLE__*/</script>
+</body>
+</html>
